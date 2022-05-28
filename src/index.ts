@@ -12,7 +12,7 @@ export async function startApp() {
   const exitHandlerService = createExitHandlerService(serverHttp, dataSource);
 
   const closeServer = async () => {
-    exitHandlerService.handleExit(0, 'TEST');
+    exitHandlerService.handleExit(0, 'TESTING');
   };
 
   if (dataSource.isInitialized) {
