@@ -65,10 +65,8 @@ export class LoggerService {
   }
 
   logError(...args: any[]) {
-    if (!isTesting) {
-      this.logger.error(args.join(' '));
-      this.filelogger.error(args.join(' '));
-    }
+    this.logger.error(args.join(' '));
+    this.filelogger.error(args.join(' '));
   }
 }
 
