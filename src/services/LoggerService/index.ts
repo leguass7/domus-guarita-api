@@ -15,6 +15,7 @@ const customFormat = format.printf(({ level, message, timestamp }) => {
   return `${timestamp} [${level}] ${message}`;
 });
 
+const isTesting = ['testing', 'test'].includes(process.env.NODE_ENV);
 export interface LoggerServiceOptions {
   pathVolume: string;
   appName: string;
@@ -57,13 +58,17 @@ export class LoggerService {
   }
 
   logging(...args: any[]) {
-    this.logger.info(args.join(' '));
-    this.filelogger.info(args.join(' '));
+    if (!isTesting) {
+      this.logger.info(args.join(' '));
+      this.filelogger.info(args.join(' '));
+    }
   }
 
   logError(...args: any[]) {
-    this.logger.error(args.join(' '));
-    this.filelogger.error(args.join(' '));
+    if (!isTesting) {
+      this.logger.error(args.join(' '));
+      this.filelogger.error(args.join(' '));
+    }
   }
 }
 
@@ -75,8 +80,6 @@ export const DevLogger = createLogger({
 });
 
 export function logDev(...args: any[]) {
-  // const isTesting = ['testing', 'test'].includes(process.env.NODE_ENV);
-  // if (!isTesting) DevLogger.info(args.join(' '));
+  if (!isTesting) DevLogger.info(args.join(' '));
   // return isDevMode && Logger.info(args.join(' '));
-  DevLogger.info(args.join(' '));
 }
