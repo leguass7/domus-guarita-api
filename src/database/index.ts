@@ -18,6 +18,6 @@ export async function createDatabase(dbOptions?: MysqlConnectionOptions) {
       slaves: [{ url: env.DB_SLAVE_URL }],
     },
     // logging: ['error'],
-    logging: isDevMode ? ['error', 'query'] : false,
+    logging: isDevMode ? ['error' /*, 'query'*/] : false,
   }).initialize();
 }
