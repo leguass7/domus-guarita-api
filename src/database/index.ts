@@ -1,6 +1,6 @@
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 
-import { env } from '#/config';
+import { env, isDevMode } from '#/config';
 import { DataSourceService } from '#/services/DataSourceService';
 
 import { entities } from './entities';
@@ -10,7 +10,7 @@ export async function createDatabase(dbOptions?: MysqlConnectionOptions) {
     ...dbOptions,
     type: 'mysql',
     entities,
-    synchronize: true,
+    synchronize: !!isDevMode,
     replication: {
       selector: 'RANDOM',
       canRetry: true,
@@ -18,6 +18,6 @@ export async function createDatabase(dbOptions?: MysqlConnectionOptions) {
       slaves: [{ url: env.DB_SLAVE_URL }],
     },
     // logging: ['error'],
-    logging: ['error', 'query'],
+    logging: isDevMode ? ['error', 'query'] : false,
   }).initialize();
 }
