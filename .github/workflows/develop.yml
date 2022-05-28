@@ -1,0 +1,63 @@
+name: TestApp
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+      - 'volumes/**'
+      - '.env.example'
+
+jobs:
+  test-app:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:latest
+        env:
+          MYSQL_DATABASE: domus-guarita-api
+          MYSQL_USER: domus-guarita-api
+          MYSQL_PASSWORD: 123456
+          MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: ⏲️ Waiting MariaDB connection
+        env:
+          PORT: ${{ job.services.mariadb.ports[3306] }}
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+            sleep 1
+          done
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+
+      - name: 📦 Install dependencies
+        run: yarn --frozen-lockfile --ignore-opcional
+
+      - name: 🚔 Test Lint
+        run: yarn lint
+
+      - name: 🚀 Test App
+        run: yarn test
+        env:
+          APP_SECRET: ${{secrets.APP_SECRET}}
+          SALT_KEY: ${{secrets.SALT_KEY}}
+          DB_URL: mysql://domus-guarita-api:123456@127.0.0.1:${{job.services.mariadb.ports[3306]}}/domus-guarita-api
+          DB_SLAVE_URL: mysql://domus-guarita-api:123456@127.0.0.1:${{job.services.mariadb.ports[3306]}}/domus-guarita-api
+
+      - name: 🏭😬 Test Build
+        run: yarn build
