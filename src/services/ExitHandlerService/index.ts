@@ -1,14 +1,19 @@
-/* eslint-disable no-console */
+import { nodeEnv } from '#/config';
+
 import { DataSourceService } from '../DataSourceService';
 import type { ServerHttp } from '../ServerHttp';
 
 export function createExitHandlerService(server: ServerHttp, dataSource: DataSourceService) {
   const handleExit = async (code: number, sig = 'UNKNOW', timeout = 500): Promise<void> => {
+    const isTesting = ['test', 'testing'].includes(nodeEnv);
+
+    // eslint-disable-next-line no-console
+    const log = (str = 'nothing') => !isTesting && console.log(str);
     try {
-      console.log(`(${sig}) Attempting a graceful shutdown with code ${code}`);
+      if (!isTesting) log(`(${sig}) Attempting a graceful shutdown with code ${code}`);
 
       setTimeout(() => {
-        console.log(`Forcing a shutdown with code ${code}`);
+        log(`Forcing a shutdown with code ${code}`);
         process.exit(code);
       }, timeout).unref();
 
@@ -16,12 +21,9 @@ export function createExitHandlerService(server: ServerHttp, dataSource: DataSou
 
       if (dataSource) await dataSource.close();
 
-      console.log(`Exiting gracefully with code ${code}`);
+      log(`Exiting gracefully with code ${code}`);
       process.exit(code);
-    } catch (error) {
-      console.log('Error shutting down gracefully');
-      console.log(error);
-      console.log(`Forcing exit with code ${code}`);
+    } finally {
       process.exit(code);
     }
   };

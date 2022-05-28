@@ -1,5 +1,7 @@
+import type { Server } from 'http';
+
 import { httpPort, nodeEnv } from './config';
-import { createDatabase } from './database';
+import { dataSource } from './database';
 import { createExitHandlerService } from './services/ExitHandlerService';
 import { ServerHttp } from './services/ServerHttp';
 import { IndexRoute } from './useCases/index.route';
@@ -7,12 +9,12 @@ import { loggerService } from './useCases/logger.service';
 
 export async function startApp() {
   const serverHttp = new ServerHttp({ port: httpPort, env: nodeEnv }, loggerService, IndexRoute);
-  const dataSource = await createDatabase();
+  await dataSource.initialize();
 
   const exitHandlerService = createExitHandlerService(serverHttp, dataSource);
 
   const closeServer = async () => {
-    exitHandlerService.handleExit(0, 'TESTING');
+    return exitHandlerService.handleExit(0, 'TESTING');
   };
 
   if (dataSource.isInitialized) {
@@ -27,3 +29,9 @@ export async function startApp() {
 }
 
 if (nodeEnv !== 'testing') startApp();
+
+export type ReturnStartApp = {
+  serverHttp: ServerHttp;
+  server: Server;
+  closeServer: () => Promise<void>;
+};

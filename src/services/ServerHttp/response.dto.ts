@@ -1,5 +1,4 @@
 import { Response } from 'express';
-
 export interface ApiResponseErrorDto {
   status?: number;
   message: string | string[];
@@ -11,4 +10,5 @@ export interface AppResponse<T = any> extends Response {
 
 export interface IResposeApi {
   success?: boolean;
+  message?: string;
 }
