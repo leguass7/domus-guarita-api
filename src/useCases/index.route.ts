@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { AuthRoute } from './auth';
-import { UserRoute } from './users/user.route';
+import { UserRoute } from './users';
 
 const IndexRoute = Router();
 
