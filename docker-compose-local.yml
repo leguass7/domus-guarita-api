@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  mysql8:
+    env_file:
+      - .env
+    container_name: mysql_container
+    image: mysql:8.0.22
+    restart: always
+    cap_add:
+      - SYS_NICE # CAP_SYS_NICE
+      - SYS_PTRACE
+      - SYS_RESOURCE
+    command: [
+        #'--sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION',
+        # --innodb-dedicated-server=ON,
+        '--default-authentication-plugin=mysql_native_password'
+        ]
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: domus-guarita-api
+      MYSQL_USER: domus-guarita-api
+      MYSQL_PASSWORD: 123456
+    ports:
+      - ${DB_PORT}:3306
+    volumes:
+      - mysql8_data:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+
+  phpmyadmin:
+    env_file:
+      - .env
+    image: phpmyadmin
+    container_name: phpmyadmin_container
+    restart: always
+    environment:
+      PMA_HOST: mysql_container
+      PMA_USER: root
+      PMA_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql8
+    volumes:
+      - /sessions
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  swagger:
+    image: swaggerapi/swagger-editor
+    container_name: swagger-editor
+    restart: always
+    ports:
+      - 88:8080
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+
+
+volumes:
+  mysql8_data:
+
+
+
+networks:
+  default:

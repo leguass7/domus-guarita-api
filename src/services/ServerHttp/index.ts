@@ -9,13 +9,9 @@ import requestIp from 'request-ip';
 
 import { LoggerService } from '../LoggerService';
 import { createErrorMiddleware } from './error.middleware';
-
 export { HttpException } from './exceptions/HttpException';
 export { NotImplementedException } from './exceptions/NotImplementedException';
 export type { ApiResponseErrorDto, IResposeApi } from './response.dto';
-
-// import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from '../../swagger-output.json';
 
 type NodeEnv = 'development' | 'production' | 'testing';
 export interface ServerHttpOptions {
@@ -54,7 +50,6 @@ export class ServerHttp {
   }
 
   private startRoutes() {
-    // this.express.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.express.use(this.indexRoute);
     this.express.use(createErrorMiddleware(this.loggerService));
     return this;
