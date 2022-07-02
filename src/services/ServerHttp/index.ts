@@ -7,11 +7,8 @@ import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import morgan from 'morgan';
 import requestIp from 'request-ip';
 
-// import { queues } from '#useCases/index.job';
-
 import { LoggerService } from '../LoggerService';
 import { createErrorMiddleware } from './error.middleware';
-
 export { HttpException } from './exceptions/HttpException';
 export { NotImplementedException } from './exceptions/NotImplementedException';
 export type { ApiResponseErrorDto, IResposeApi } from './response.dto';

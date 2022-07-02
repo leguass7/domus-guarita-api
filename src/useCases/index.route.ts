@@ -1,10 +1,12 @@
 import { Router } from 'express';
 
+import { SwaggerRoute } from './api-docs';
 import { AuthRoute } from './auth';
-import { UserRoute } from './users/user.route';
+import { UserRoute } from './users';
 
 const IndexRoute = Router();
 
+IndexRoute.use('/api-docs', SwaggerRoute);
 IndexRoute.use('/auth', AuthRoute);
 IndexRoute.use('/users', UserRoute);
 
